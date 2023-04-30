@@ -1,4 +1,4 @@
-# cpp_gobang
+# cpp_gobang v3.0
 
 使用纯c++编写，绘图采用easyx图形库
 
@@ -6,12 +6,8 @@
 
 ## 开始界面
 
-![MENU](doc/Snipaste_2023-04-27_16-11-09.png)
-
-## 棋盘选择
-
-![棋盘选择](doc/Snipaste_2023-04-27_16-18-43.png)
+![Snipaste_2023-04-30_22-05-20](doc/Snipaste_2023-04-30_22-05-20.png)
 
 ## 游戏主界面
 
-![游戏主界面](doc/Snipaste_2023-04-27_16-18-52.png)
+![Snipaste_2023-04-30_22-05-30](doc/Snipaste_2023-04-30_22-05-30.png)

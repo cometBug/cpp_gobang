@@ -40,15 +40,93 @@ void putimagePNG(int x, int y, IMAGE* picture) //x为载入图片的X坐标，y为Y坐标
     }
 }
 
-Chess::Chess(Control* control, int marginX, int marginY, int ChessSize)
+Chess::Chess(Control* control, int BoardSize, int marginX, int marginY, int ChessSize)
 {
     this->m_control = control;
     this->BoardSize = BoardSize;
     this->margin_x = marginX;
     this->margin_y = marginY;
     this->ChessSize = ChessSize;    
-   
-    control->ChessSize = ChessSize;
+    playerFlag = CHESS_BLACK;
+
+    for (int i = 0; i < BoardSize; i++) {
+        vector<int> row;
+        for (int j = 0; j < BoardSize; j++) {
+            row.emplace_back(0);
+        }
+        chessMap.emplace_back(row);
+    }
+}
+
+void Chess::drawChessBoard(const int size)
+{
+    //设置格子大小
+    int step = 45;
+
+    //设置棋盘大小
+    int graphsize = step * (size + 1);
+
+    //初始化绘图窗口
+    initgraph(graphsize, graphsize);
+    //重载绘图窗口位置
+    HWND hWnd = GetHWnd();
+    SetWindowPos(hWnd, nullptr, 300, 70, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+
+    //设置背景色为木色
+    setbkcolor(RGB(222, 174, 110));
+    //用背景色清空屏幕
+    cleardevice();
+
+    setlinecolor(RGB(0, 0, 0));//线条色设置为黑色
+    //画框线，宽度为4个像素
+    setlinestyle(PS_SOLID, 4);
+    line(step, step, step, size * step);
+    line(step, step, size * step, step);
+    line(step, size * step, size * step, size * step);
+    line(size * step, step, size * step, size * step);
+    //画格线，宽度为2个像素
+    setlinestyle(PS_SOLID, 2);
+    for (int i = 2; i <= 18; i++)
+    {
+        line(i * step, 1 * step, i * step, size * step);//画竖线
+        line(1 * step, i * step, size * step, i * step);//画横线
+    }
+
+    setfillcolor(RGB(0, 0, 0));//填充色设置为黑色
+    //天元坐标
+    int o_x = static_cast<int>(step * (size + 1) * 0.5);
+    int o_y = o_x;
+    fillcircle(o_x, o_y, 5);
+    //计算小星偏距
+    int setover = static_cast<int>((size + 1) * 0.5 - 4);
+    //画天元和小星
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+            fillcircle(o_x + i * setover * step, o_y + j * setover * step, 5);
+        }
+    }
+
+    //打印坐标
+    settextcolor(RGB(0, 0, 0));
+    settextstyle(20, 0, _T("微软雅黑"));
+
+    for (int i = 0; i < size; i++) {
+        TCHAR c = _T('A' + i);
+        outtextxy(40 + i * step, 20, c);
+    }
+    settextstyle(20, 0, _T("Consolas"));
+    for (int i = 0; i < size; i++) {
+        if (i < 9) {
+            TCHAR c = _T('1' + i);
+            outtextxy(25, 40 + i * step, c);
+        }
+        else
+        {
+            TCHAR s[5];
+            _stprintf_s(s, _T("%d"), 1 + i);    // 输出数值，先将数字格式化输出为字符串
+            outtextxy(20, 35 + i * step, s);
+        }
+    }    
 }
 
 void Chess::init()
@@ -63,25 +141,23 @@ void Chess::init()
     ////显示棋盘图片
     //loadimage(0, _T("res/棋盘.jpg"));
 
-    m_control->drawGameInterface(BoardSize);
+    drawChessBoard(BoardSize);
 
     //播放开始提示音
-    mciSendString(_T("play res/music/start.wav"), 0, 0, 0);    
+    mciSendString(_T("play res/start.wav"), 0, 0, 0);
 
-    //棋盘初始化
-    m_control->chessMap.clear();
+    //加载棋子图片
+    loadimage(&chessBlackImg, _T("res/black.png"), ChessSize, ChessSize, true);
+    loadimage(&chessWhiteImg, _T("res/white.png"), ChessSize, ChessSize, true);
+
+    //棋盘清理
     for (int i = 0; i < BoardSize; i++) {
-        vector<int> row;
         for (int j = 0; j < BoardSize; j++) {
-            row.emplace_back(0);
+            chessMap[i][j] = 0;
         }
-        m_control->chessMap.emplace_back(row);
     }
-    m_control->step = 0;//从第0步开始
-    m_control->manual.clear();    
+    playerFlag = true;
 }
-
-
 
 bool Chess::clickBoard(int x, int y, ChessPos* pos)
 {
@@ -99,7 +175,7 @@ bool Chess::clickBoard(int x, int y, ChessPos* pos)
         if (len < offset) {
             pos->m_row = row;
             pos->m_col = col;
-            if (m_control->chessMap[pos->m_row][pos->m_col] == 0) {
+            if (chessMap[pos->m_row][pos->m_col] == 0) {
                 selectPos = true;
             }
             break;
@@ -111,7 +187,7 @@ bool Chess::clickBoard(int x, int y, ChessPos* pos)
         if (len < offset) {
             pos->m_row = row;
             pos->m_col = col + 1;
-            if (m_control->chessMap[pos->m_row][pos->m_col] == 0) {
+            if (chessMap[pos->m_row][pos->m_col] == 0) {
                 selectPos = true;
             }
             break;
@@ -123,7 +199,7 @@ bool Chess::clickBoard(int x, int y, ChessPos* pos)
         if (len < offset) {
             pos->m_row = row + 1;
             pos->m_col = col;
-            if (m_control->chessMap[pos->m_row][pos->m_col] == 0) {
+            if (chessMap[pos->m_row][pos->m_col] == 0) {
                 selectPos = true;
             }
             break;
@@ -135,19 +211,35 @@ bool Chess::clickBoard(int x, int y, ChessPos* pos)
         if (len < offset) {
             pos->m_row = row + 1;
             pos->m_col = col + 1;
-            if (m_control->chessMap[pos->m_row][pos->m_col] == 0) {
+            if (chessMap[pos->m_row][pos->m_col] == 0) {
                 selectPos = true;
             }
             break;
-        }        
+        }
+        mciSendString(_T("play res/无效点击.mp3"), 0, 0, 0);
     } while (0);
 
     return selectPos;
 }
 
-void Chess::setBoardSize(const int size)
+ChessPos Chess::chesspos()
 {
-    BoardSize = size;
+    return ChessPos();
+}
+
+void Chess::chessDown(ChessPos* pos, chess_kind_t kind)
+{
+    int x = static_cast<int>(margin_x + ChessSize * pos->m_col - ChessSize * 0.5);
+    int y = static_cast<int>(margin_y + ChessSize * pos->m_row - ChessSize * 0.5);
+
+    if (kind == CHESS_WHITE) {
+        putimagePNG(x, y, &chessWhiteImg);
+    }
+    else {
+        putimagePNG(x, y, &chessBlackImg);
+    }
+    mciSendString(_T("play res/down7.wav"), 0, 0, 0);
+    updateChessMap(pos);
 }
 
 int Chess::getBoardSize()
@@ -155,16 +247,86 @@ int Chess::getBoardSize()
     return BoardSize;
 }
 
-
-
-bool Chess::isWin(enum chess_kind_t kind)
+int Chess::getChessData(ChessPos* pos)
 {
-    //只需要判断落子点周围方向
+    return chessMap[pos->m_row][pos->m_col];
+}
+
+int Chess::getChessData(int row, int col)
+{
+    return chessMap[row][col];
+}
+
+bool Chess::checkOver()
+{  
+    //如果胜负已分
+    if (isWin()) {
+
+        Sleep(1500);        
+        if (playerFlag == false) {
+            //刚才走棋的是黑棋，棋手胜利
+            mciSendStringW(_T("play res/不错.mp3"), 0, 0, 0);
+            initgraph(897, 622);
+            loadimage(0, _T("res/胜利1.jpg"));
+            HWND hWnd= GetHWnd();
+            SetWindowText(hWnd, _T("胜利"));
+        }
+        else {
+            //AI胜利
+            mciSendStringW(_T("play res/失败.mp3"), 0, 0, 0);
+            initgraph(897, 622);
+            loadimage(0, _T("res/失败1.jpg"));
+            HWND hWnd = GetHWnd();
+            SetWindowText(hWnd, _T("失败"));
+        }
+
+        //按钮加载
+        IMAGE again_bt; //尺寸为313*153
+        IMAGE return_bt;
+        loadimage(&again_bt, _T("res/again_button.png"), 313 / 2, 153 / 2, true);
+        putimagePNG(470, 450, &again_bt);
+        loadimage(&return_bt, _T("res/return_button.png"), 313 / 2, 153 / 2, true);
+        putimagePNG(280, 450, &return_bt);
+        
+        //更新控制信息
+        while (1) {
+            
+            m_control->updateMessage();
+
+            if (m_control->getclickmsg() == AGAIN) {
+                m_control->m_goon = true;
+                return true;
+            }
+            else if (m_control->getclickmsg() == MENU) {
+                m_control->m_menu = true;
+                return true;
+            }
+        }
+        //_getch();
+        //closegraph();        
+    }
+    return false;
+}
+
+void Chess::updateChessMap(ChessPos* pos)
+{    
+    this->m_pos = *pos;
+    chessMap[pos->m_row][pos->m_col] = (playerFlag ? CHESS_BLACK : CHESS_WHITE);
+    playerFlag = !playerFlag;   //交换黑白方
+}
+
+bool Chess::isWin()
+{
+    //只需要判断落子点周围方向，且只需要判断当前棋手
     vector<int> chessrange;
     int size = BoardSize;
 
-    int row = m_control->m_pos.m_row;
-    int col = m_control->m_pos.m_col;
+    chess_kind_t kind;
+    if (playerFlag == false) kind = CHESS_BLACK;
+    else kind = CHESS_WHITE;
+
+    int row = m_pos.m_row;
+    int col = m_pos.m_col;
 
     int cur_row;
     int cur_col;
@@ -180,7 +342,7 @@ bool Chess::isWin(enum chess_kind_t kind)
                 chessrange.push_back(0);
             }
             else {
-                chessrange.push_back(m_control->getChessData(cur_row, cur_col));
+                chessrange.push_back(this->getChessData(cur_row, cur_col));
             }
             cur_col++;
         }
@@ -201,7 +363,7 @@ bool Chess::isWin(enum chess_kind_t kind)
                 chessrange.push_back(0);
             }
             else {
-                chessrange.push_back(m_control->getChessData(cur_row, cur_col));
+                chessrange.push_back(this->getChessData(cur_row, cur_col));
             }
             cur_row++;
             cur_col++;
@@ -223,7 +385,7 @@ bool Chess::isWin(enum chess_kind_t kind)
                 chessrange.push_back(0);
             }
             else {
-                chessrange.push_back(m_control->getChessData(cur_row, cur_col));
+                chessrange.push_back(this->getChessData(cur_row, cur_col));
             }
             cur_row++;
         }
@@ -244,7 +406,7 @@ bool Chess::isWin(enum chess_kind_t kind)
                 chessrange.push_back(0);
             }
             else {
-                chessrange.push_back(m_control->getChessData(cur_row, cur_col));
+                chessrange.push_back(this->getChessData(cur_row, cur_col));
             }
             cur_row++;
             cur_col--;

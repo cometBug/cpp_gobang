@@ -1,24 +1,21 @@
 #pragma once
-#include "Control.h"
+#include "Chess.h"
 
-class Man;
 class AI
-{	
-	friend Man;
-public:	
-	AI(Control* control) :m_control(control) {};
-	void init(Control* control);
-	void go(enum chess_kind_t kind);
+{
+public:
+	void init(Chess* chess);
+	void go();
 
 private:
-	Control* m_control;
+	Chess* chess;
 	vector<vector<int>> scoreMap;
 
 private:
-	int GetScore(const int form, enum chess_kind_t my_kind, enum chess_kind_t score_kind);
-	int calculateForm(const vector<int>& chessRange, enum chess_kind_t kind);
-	int GetTotalScore(const int row, const int col, enum chess_kind_t my_kind, enum chess_kind_t score_kind);
-	void updateScoreMap(enum chess_kind_t kind);
-	ChessPos think(enum chess_kind_t kind);
+	int GetScore(const int from, const chess_kind_t kind);
+	int calculateForm(const vector<int>& chessRange, const chess_kind_t kind);
+	int GetTotalScore(const int row, const int col, const chess_kind_t kind);
+	void updateScoreMap();
+	ChessPos think();
 };
 

@@ -118,7 +118,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AI.cpp" />
+    <ClCompile Include="Chess.cpp" />
     <ClCompile Include="ChessGame.cpp" />
     <ClCompile Include="Control.cpp" />
     <ClCompile Include="Man.cpp" />
@@ -136,33 +136,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AI.h" />
+    <ClInclude Include="Chess.h" />
     <ClInclude Include="ChessGame.h" />
     <ClInclude Include="Control.h" />
     <ClInclude Include="Man.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="resource1.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="C:\Users\crane\Downloads\棋盘区.png" />
-    <Image Include="res\black.png" />
-    <Image Include="res\black2.png" />
-    <Image Include="res\chessboard.ico" />
-    <Image Include="res\menu.jpg" />
-    <Image Include="res\menu原.jpg" />
-    <Image Include="res\red.png" />
-    <Image Include="res\white.png" />
-    <Image Include="res\white2.png" />
-    <Image Include="res\失败.jpg" />
-    <Image Include="res\失败1.jpg" />
-    <Image Include="res\棋盘.jpg" />
-    <Image Include="res\棋盘2.jpg" />
-    <Image Include="res\棋盘3.bmp" />
-    <Image Include="res\棋盘3.png" />
-    <Image Include="res\胜利.jpg" />
-    <Image Include="res\胜利1.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="五子棋游戏.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

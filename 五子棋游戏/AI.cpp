@@ -1,11 +1,10 @@
 #include "AI.h"
 
-void AI::init(Control* control)
+void AI::init(Chess* chess)
 {
-	m_control = control;
+	this->chess = chess;
 
-	int size = control->getBoardSize();
-	scoreMap.clear();
+	int size = chess->getBoardSize();
 	for (int i = 0; i < size; i++) {
 		vector<int> row;
 		for (int j = 0; j < size; j++) {
@@ -15,14 +14,14 @@ void AI::init(Control* control)
 	}
 }
 
-void AI::go(enum chess_kind_t kind)
-{	
-	ChessPos pos = think(kind);
+void AI::go()
+{
+	ChessPos pos = think();
 
 	Sleep(1000);	//假装思考
 
 	//落子
-	m_control->chessDown(&pos, kind);
+	chess->chessDown(&pos, CHESS_WHITE);
 }
 
 #define LIVE5	50	//连5
@@ -37,7 +36,8 @@ void AI::go(enum chess_kind_t kind)
 #define DEAD2_2 8	//死2-2
 
 //计算棋形
-int AI::calculateForm(const vector<int>& chessRange, enum chess_kind_t kind)
+// person=1表示黑棋，person=-1表示白棋，person=0表示空白
+int AI::calculateForm(const vector<int>& chessRange, const chess_kind_t kind)
 {
 	int form = 0;
 	for (int ii = 0; ii < 5; ii++)
@@ -124,9 +124,9 @@ int AI::calculateForm(const vector<int>& chessRange, enum chess_kind_t kind)
 }
 
 //评分计算
-int AI::GetScore(const int form, enum chess_kind_t my_kind, enum chess_kind_t score_kind)
+int AI::GetScore(const int form, const chess_kind_t kind)
 {
-	if (my_kind == score_kind)
+	if (kind == CHESS_WHITE)
 	{
 		switch (form)
 		{
@@ -141,8 +141,8 @@ int AI::GetScore(const int form, enum chess_kind_t my_kind, enum chess_kind_t sc
 		case DEAD2_2:	return 1;
 		default:		return 0;
 		}
-	}
-	else
+	}		
+	else if (kind == CHESS_BLACK)
 	{
 		switch (form)
 		{
@@ -162,12 +162,12 @@ int AI::GetScore(const int form, enum chess_kind_t my_kind, enum chess_kind_t sc
 }
 
 //计算四个方向总分
-int AI::GetTotalScore(const int row, const int col, enum chess_kind_t my_kind, enum chess_kind_t score_kind)
+int AI::GetTotalScore(const int row, const int col, const chess_kind_t kind)
 {
 	vector<int> chessrange;
 	int form = 0;
-	int size = m_control->getBoardSize();
 	int score = 0;
+	int size = chess->getBoardSize();
 
 	//四个方向
 	//左->右
@@ -179,15 +179,15 @@ int AI::GetTotalScore(const int row, const int col, enum chess_kind_t my_kind, e
 			chessrange.push_back(2);
 		}
 		else if (cur_row == row && cur_col == col) {
-			chessrange.push_back(score_kind);
+			chessrange.push_back(kind);
 		}
 		else {
-			chessrange.push_back(m_control->getChessData(cur_row, cur_col));
+			chessrange.push_back(chess->getChessData(cur_row, cur_col));
 		}
 		cur_col++;
 	}
-	form = calculateForm(chessrange, score_kind);	//此时棋型
-	score += GetScore(form, my_kind, score_kind);
+	form = calculateForm(chessrange, kind);	//此时棋型
+	score += GetScore(form, kind);
 	chessrange.clear();
 
 	//左上->右下
@@ -199,16 +199,16 @@ int AI::GetTotalScore(const int row, const int col, enum chess_kind_t my_kind, e
 			chessrange.push_back(2);
 		}
 		else if (cur_row == row && cur_col == col) {
-			chessrange.push_back(score_kind);
+			chessrange.push_back(kind);
 		}
 		else {
-			chessrange.push_back(m_control->getChessData(cur_row, cur_col));
+			chessrange.push_back(chess->getChessData(cur_row, cur_col));
 		}
 		cur_row++;
 		cur_col++;
 	}
-	form = calculateForm(chessrange, score_kind);	//此时棋型
-	score += GetScore(form, my_kind, score_kind);
+	form = calculateForm(chessrange, kind);
+	score += GetScore(form, kind);
 	chessrange.clear();
 
 	//上->下
@@ -221,15 +221,15 @@ int AI::GetTotalScore(const int row, const int col, enum chess_kind_t my_kind, e
 			chessrange.push_back(2);
 		}
 		else if (cur_row == row && cur_col == col) {
-			chessrange.push_back(score_kind);
+			chessrange.push_back(kind);
 		}
 		else {
-			chessrange.push_back(m_control->getChessData(cur_row, cur_col));
+			chessrange.push_back(chess->getChessData(cur_row, cur_col));
 		}
 		cur_row++;
 	}
-	form = calculateForm(chessrange, score_kind);	//此时棋型
-	score += GetScore(form, my_kind, score_kind);
+	form = calculateForm(chessrange, kind);
+	score += GetScore(form, kind);
 	chessrange.clear();
 
 	//右上->左下
@@ -242,26 +242,25 @@ int AI::GetTotalScore(const int row, const int col, enum chess_kind_t my_kind, e
 			chessrange.push_back(2);
 		}
 		else if (cur_row == row && cur_col == col) {
-			chessrange.push_back(score_kind);
+			chessrange.push_back(kind);
 		}
 		else {
-			chessrange.push_back(m_control->getChessData(cur_row, cur_col));
+			chessrange.push_back(chess->getChessData(cur_row, cur_col));
 		}
 		cur_row++;
 		cur_col--;
 	}
-	form = calculateForm(chessrange, score_kind);	//此时棋型
-	score += GetScore(form, my_kind, score_kind);
+	form = calculateForm(chessrange, kind);
+	score += GetScore(form, kind);
 	chessrange.clear();
 
 	return score;
 }
 
-//更新评分图
-void AI::updateScoreMap(enum chess_kind_t kind)
+void AI::updateScoreMap()
 {
 	int score = 0;
-	int size = m_control->getBoardSize();
+	int size = chess->getBoardSize();
 	//评分容器置零
 	for (int i = 0; i < size; i++) {
 		for (int j = 0; j < size; j++) {
@@ -273,42 +272,28 @@ void AI::updateScoreMap(enum chess_kind_t kind)
 	for (int row = 0; row < size; row++) {
 		for (int col = 0; col < size; col++) {
 			//对每个点进行评分计算
-			if (m_control->getChessData(row, col))
+			if (chess->getChessData(row, col))
 				scoreMap[row][col] = 0;
 			else {
-				//得到总分
-				score = GetTotalScore(row, col, kind, kind) +
-						GetTotalScore(row, col, kind, chess_kind_t(-kind));
+				//黑棋+白棋得分=总分
+				score = GetTotalScore(row, col, CHESS_BLACK) +
+						GetTotalScore(row, col, CHESS_WHITE);
 				scoreMap[row][col] = score;
 			}
 		}
 	}
 }
 
-//kind为AI的棋色
-ChessPos AI::think(enum chess_kind_t kind)
-{	
+ChessPos AI::think()
+{
+	updateScoreMap();
+
 	vector<ChessPos>  maxPoints;
 	int maxScore = 0;
-	int size = m_control->getBoardSize();
-	//先手走天元
-	int num = 0;
+	int size = chess->getBoardSize();
 	for (int row = 0; row < size; row++) {
 		for (int col = 0; col < size; col++) {
-			if (m_control->getChessData(row, col) == 0) {
-				num++;
-			}
-		}
-	}
-	if (num == size * size) {
-		int tianyuan = static_cast<int>((size - 1) * 0.5);
-		return { tianyuan,tianyuan };
-	}
-	//其他看评分
-	updateScoreMap(kind);
-	for (int row = 0; row < size; row++) {
-		for (int col = 0; col < size; col++) {
-			if (m_control->getChessData(row, col) == 0) {
+			if (chess->getChessData(row, col) == 0) {
 				if (scoreMap[row][col] > maxScore) {
 					maxScore = scoreMap[row][col];
 					maxPoints.clear();

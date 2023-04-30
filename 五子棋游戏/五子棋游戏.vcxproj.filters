@@ -24,6 +24,9 @@
     <ClCompile Include="AI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Chess.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="ChessGame.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -38,75 +41,14 @@
     <ClInclude Include="AI.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Chess.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="ChessGame.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Control.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="resource1.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="C:\Users\crane\Downloads\棋盘区.png">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\black.png">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\black2.png">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\menu.jpg">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\menu原.jpg">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\red.png">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\white.png">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\white2.png">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\棋盘.jpg">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\棋盘2.jpg">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\棋盘3.bmp">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\棋盘3.png">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\胜利.jpg">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\胜利1.jpg">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\失败.jpg">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\失败1.jpg">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\chessboard.ico">
-      <Filter>资源文件</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="五子棋游戏.rc">
-      <Filter>资源文件</Filter>
-    </ResourceCompile>
   </ItemGroup>
 </Project>

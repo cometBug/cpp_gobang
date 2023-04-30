@@ -1,16 +1,15 @@
 #pragma once
-#include "Control.h"
-#include "AI.h"
+#include "Chess.h"
 
 
 class Man
 {
 public:
-	Man(AI* ai, Control* control) :m_ai(ai), m_control(control) {};
-	void init(Control* control);
-	void go(enum chess_kind_t kind);	//kindÂä×Ó
-private:	
-	AI* m_ai;
+	Man(Control* control) :m_control(control) {};
+	void init(Chess* chess);
+	void go();
+private:
+	Chess* m_chess;
 	Control* m_control;
 };
 

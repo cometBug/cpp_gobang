@@ -6,7 +6,7 @@
 
 ## 开始界面
 
-![MENU]([doc/Snipaste_2023-04-27_16-11-09.png](https://cdn.jsdelivr.net/gh/cometBug/blogImage@main/img/Snipaste_2023-04-27_16-11-09.png)
+![MENU](https://cdn.jsdelivr.net/gh/cometBug/blogImage@main/img/Snipaste_2023-04-27_16-11-09.png)
 
 ## 棋盘选择
 

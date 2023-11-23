@@ -6,12 +6,12 @@
 
 ## 开始界面
 
-![MENU](doc/Snipaste_2023-04-27_16-11-09.png)
+![MENU]([doc/Snipaste_2023-04-27_16-11-09.png](https://cdn.jsdelivr.net/gh/cometBug/blogImage@main/img/Snipaste_2023-04-27_16-11-09.png)
 
 ## 棋盘选择
 
-![棋盘选择](doc/Snipaste_2023-04-27_16-18-43.png)
+![棋盘选择](https://cdn.jsdelivr.net/gh/cometBug/blogImage@main/img/Snipaste_2023-04-27_16-18-52.png)
 
 ## 游戏主界面
 
-![游戏主界面](doc/Snipaste_2023-04-27_16-18-52.png)
+![游戏主界面](https://cdn.jsdelivr.net/gh/cometBug/blogImage@main/img/Snipaste_2023-04-27_16-18-43.png)
